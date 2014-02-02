@@ -268,10 +268,10 @@ public class MongoDBCache implements Cache {
         Cast caster = engine.getCastUtil();
 
         Long created = System.currentTimeMillis();
-        int create = (int) created;
+        int create = (int) (long) created;
         //int idle = idleTime == null ? 0 : idleTime.intValue(); idle not supported since version 2
         int idle = 0;
-        int life = lifeSpan == null ? 0 : (int) lifeSpan;
+        int life = lifeSpan == null ? 0 : (int) (long) lifeSpan;
 
         BasicDBObject obj = new BasicDBObject();
         MongoDBCacheDocument doc = new MongoDBCacheDocument(obj);
@@ -415,7 +415,7 @@ public class MongoDBCache implements Cache {
         DBCollection coll = getCollection();
         DBCursor cur = null;
         Long now = System.currentTimeMillis();
-        int nowi = (int) now;
+        int nowi = (int) (long) now;
         BasicDBObject q = (BasicDBObject) query.clone();
 
         //execute the query
@@ -432,7 +432,7 @@ public class MongoDBCache implements Cache {
     private void save(MongoDBCacheDocument doc) {
         DBCollection coll = getCollection();
         Long now = System.currentTimeMillis();
-        int nowi = (int) now;
+        int nowi = (int) (long) now;
 
         doc.setLastAccessed(nowi);
         doc.setLastUpdated(nowi);
