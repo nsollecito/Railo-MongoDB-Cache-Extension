@@ -268,10 +268,10 @@ public class MongoDBCache implements Cache {
         Cast caster = engine.getCastUtil();
 
         Long created = System.currentTimeMillis();
-        int create = (int) (long) created;
+        Long create = System.currentTimeMillis();
         //int idle = idleTime == null ? 0 : idleTime.intValue(); idle not supported since version 2
         int idle = 0;
-        int life = lifeSpan == null ? 0 : (int) (long) lifeSpan;
+        Long life = lifeSpan == null ? 0 : lifeSpan;
 
         BasicDBObject obj = new BasicDBObject();
         MongoDBCacheDocument doc = new MongoDBCacheDocument(obj);
@@ -284,9 +284,9 @@ public class MongoDBCache implements Cache {
             doc.setLifeSpan(life);
             doc.setHits(0);
 
-            int expires = life + create;
+            Long expires = life + create;
             if (life == 0) {
-                doc.setExpires(0);
+                doc.setExpires(0L);
             } else {
                 doc.setExpires(expires);
             }
@@ -415,11 +415,10 @@ public class MongoDBCache implements Cache {
         DBCollection coll = getCollection();
         DBCursor cur = null;
         Long now = System.currentTimeMillis();
-        int nowi = (int) (long) now;
         BasicDBObject q = (BasicDBObject) query.clone();
 
         //execute the query
-        q.append("expires", new BasicDBObject("$lt", nowi).append("$gt", 0));
+        q.append("expires", new BasicDBObject("$lt", now).append("$gt", 0));
         coll.remove(q);
 
     }
@@ -432,10 +431,9 @@ public class MongoDBCache implements Cache {
     private void save(MongoDBCacheDocument doc) {
         DBCollection coll = getCollection();
         Long now = System.currentTimeMillis();
-        int nowi = (int) (long) now;
 
-        doc.setLastAccessed(nowi);
-        doc.setLastUpdated(nowi);
+        doc.setLastAccessed(now);
+        doc.setLastUpdated(now);
         doc.addHit();
         /*
            *  very atomic updated. Just the changed values are sent to db.
